@@ -1,0 +1,38 @@
+{
+  "Country": [
+    "Australia",
+    "Brazil",
+    "China",
+    "Egypt",
+    "France",
+    "India",
+    "USA"
+  ],
+  "Category": [
+    "Adventure",
+    "Beach",
+    "Cultural",
+    "Historical",
+    "Nature",
+    "Urban"
+  ],
+  "Accommodation_Available": [
+    "Yes",
+    "No"
+  ],
+  "numeric_ranges": {
+    "Visitors": [
+      1108.0,
+      999982.0
+    ],
+    "Rating": [
+      1.0,
+      5.0
+    ]
+  },
+  "meta": {
+    "model_type": "Ridge",
+    "holdout_rmse": 282779.17,
+    "used_log_target": false
+  }
+}

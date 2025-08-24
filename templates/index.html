@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-g">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tourism Revenue Predictor</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .form-label { @apply block text-sm font-medium text-gray-700 mb-1; }
+        .form-input { @apply block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm; }
+        .form-select { @apply form-input; }
+        .btn-predict { @apply w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500; }
+    </style>
+</head>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen">
+    <div class="w-full max-w-xl p-8 space-y-8 bg-white rounded-lg shadow-lg">
+        <div>
+            <h1 class="text-2xl font-bold text-center text-gray-900">Tourism Revenue Predictor</h1>
+            <p class="mt-2 text-center text-sm text-gray-600">
+                Fill in the details below to estimate the potential revenue.
+            </p>
+        </div>
+
+        <form action="/predict" method="POST" class="mt-8 space-y-6">
+            <!-- Country Dropdown -->
+            <div>
+                <label for="country" class="form-label">Country</label>
+                <select id="country" name="country" class="form-select" required>
+                    {% for country in countries %}
+                    <option value="{{ country }}">{{ country }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Category Dropdown -->
+            <div>
+                <label for="category" class="form-label">Category</label>
+                <select id="category" name="category" class="form-select" required>
+                    {% for category in categories %}
+                    <option value="{{ category }}">{{ category }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <!-- Accommodation Radio Buttons -->
+            <div>
+                <label class="form-label">Accommodation Available</label>
+                <div class="flex items-center space-x-4 mt-2">
+                    {% for option in acc_options %}
+                    <div class="flex items-center">
+                        <input id="acc_{{ loop.index }}" name="accommodation" type="radio" value="{{ option }}" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300" {% if loop.first %}checked{% endif %}>
+                        <label for="acc_{{ loop.index }}" class="ml-2 block text-sm text-gray-900">{{ option }}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Visitors Slider -->
+            <div>
+                <label for="visitors" class="form-label">Number of Visitors: <span id="visitors-value" class="font-bold text-indigo-600"></span></label>
+                <input type="range" id="visitors" name="visitors" 
+                       min="{{ ranges.Visitors[0] }}" max="{{ ranges.Visitors[1] }}" 
+                       value="{{ (ranges.Visitors[0] + ranges.Visitors[1]) / 2 }}" 
+                       class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+            </div>
+
+            <!-- Rating Slider -->
+            <div>
+                <label for="rating" class="form-label">Rating: <span id="rating-value" class="font-bold text-indigo-600"></span></label>
+                <input type="range" id="rating" name="rating" 
+                       min="{{ ranges.Rating[0] }}" max="{{ ranges.Rating[1] }}" 
+                       step="0.1" value="{{ (ranges.Rating[0] + ranges.Rating[1]) / 2 }}"
+                       class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+            </div>
+
+            <!-- Submit Button -->
+            <div>
+                <button type="submit" class="btn-predict">Predict Revenue</button>
+            </div>
+        </form>
+        
+        <!-- Model Metadata -->
+        <div class="text-xs text-center text-gray-500 border-t pt-4 mt-6">
+            <p>Model: {{ meta.model_type }} | RMSE: {{ meta.holdout_rmse }} | Log Target: {{ meta.used_log_target }}</p>
+        </div>
+    </div>
+
+    <script>
+        // Script to update slider value displays
+        const visitorsSlider = document.getElementById('visitors');
+        const visitorsValue = document.getElementById('visitors-value');
+        const ratingSlider = document.getElementById('rating');
+        const ratingValue = document.getElementById('rating-value');
+
+        function updateVisitorValue() {
+            visitorsValue.textContent = parseInt(visitorsSlider.value).toLocaleString();
+        }
+        function updateRatingValue() {
+            ratingValue.textContent = parseFloat(ratingSlider.value).toFixed(1);
+        }
+
+        visitorsSlider.addEventListener('input', updateVisitorValue);
+        ratingSlider.addEventListener('input', updateRatingValue);
+
+        // Initial update on page load
+        updateVisitorValue();
+        updateRatingValue();
+    </script>
+</body>
+</html>
